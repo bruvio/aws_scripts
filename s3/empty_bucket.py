@@ -13,10 +13,10 @@ from common import get_buckets, get_objects, get_object_versions, has_versioning
 def chunked_iterable(iterable, size):
     it = iter(iterable)
     while True:
-        chunk = tuple(itertools.islice(it, size))
-        if not chunk:
+        if chunk := tuple(itertools.islice(it, size)):
+            yield chunk
+        else:
             break
-        yield chunk
 
 
 def _for_delete_objects(obj):
@@ -76,9 +76,5 @@ if __name__ == "__main__":
         total_size += sum(s3_obj.get("Size", 0) for s3_obj in objects)
 
         print(
-            "Deleted %s objects, totalling %s"
-            % (
-                termcolor.colored(humanize.intcomma(total_deleted), "green"),
-                termcolor.colored(humanize.naturalsize(total_size), "green"),
-            ),
+            f'Deleted {termcolor.colored(humanize.intcomma(total_deleted), "green")} objects, totalling {termcolor.colored(humanize.naturalsize(total_size), "green")}'
         )
